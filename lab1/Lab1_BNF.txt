@@ -1,0 +1,50 @@
+BNF + Lexical and syntactic constructs of the language
+
+<program> ::= <statement_list>
+<statement_list> ::= <statement> | <statement> <statement_list> | <epsilon>
+<statement> ::= <var_decl_statement> | <assign_stmt> | <print_stmt> | <input_stmt>  | <expr_stmt>
+              | <if_stmt> | <while_stmt> | <function_def> | <return_stmt>
+
+<var_decl_stmt> ::= “var” <identifier> “=” <expression> “;”
+<assign_stmt> ::= <identifier> “=" <expression> “;”
+<print_stmt> ::= “print” <expression> “;”
+<input_stmt> ::= “input” <identifier> “;”
+<expr_stmt> ::= <expression> “;”
+<if_stmt> ::= “if” “(” <condition> “)”
+ "{" <statement_list> "}"
+              [ "else" "{" <statement_list> "}" ]
+<while_stmt> ::= “while” “(” <condition> “)” 
+			“{” <statement_list> “}”
+<function_def> ::= “function” <identifier> "(" [ <param_list> ] ")" 
+                                   "{" <statement_list> "return" <expression> ";" "}"
+<param_list> ::= <identifier> | <identifier> “,” <param_list>
+<return_stmt> ::=  “return” <expression> “;”
+
+Expressions:
+<condition> ::= <expression> <comparison_op> <expression>
+<comparison_op> ::=  “==” | “<>” | “<” | “>” | “<=”  | “>=”
+<expression> ::= <term> | <expression> <operator> <term>
+<operator> ::="^^" (* GCD ) | "%%" ( LCM ) | "@@" ( Power Sum ) | "+" | "-" | "" | "/" | "%" | “^” 
+<term> ::= <identifier> | <number> | "(" <expression> ")" | <function_call>
+<function_call> ::= <builtin_function> "(" <arguments_opt> ")" | <identifier> "(" <arguments_opt> ")"
+<arguments_opt> ::= <arguments> | <epsilon>
+<arguments> ::= <expression> <arguments_tail>
+<arguments_tail> ::= "," <expression> <arguments_tail> | <epsilon>
+<builtin_function> ::= "sqrt" | "abs" | "pow" | "sin" | "cos" | "tan"
+
+Lexical Rules:
+<identifier> ::= <letter> { <letter> | <digit> | "_" }
+<number> ::= <digit> { <digit> } [ "." { <digit> } ]
+<letter> ::= "A" | "B" | ... | "Z" | "a" | "b" | ... | "z"
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+Reserved words:
+input, print, if, else, while, function, return, var
+
+Operators and symbols:
+Arithmetic Operators:   +  -  *  /  %  ^^  %%  @@
+Relational Operators:   ==  <>  <  >  <=  >=
+Grouping Symbols:       ( ) { } 
+Statement Terminator:   ;
+Assignment Operator:    =
+Comma Separator:        ,
