@@ -1,0 +1,11 @@
+var x = 10;
+var y = 20a;         
+function sum (a, b) {
+    return a + b ;
+}
+if (x << y) {         
+    print x$;          
+} else {
+    print y;
+}
+input 123abc;          

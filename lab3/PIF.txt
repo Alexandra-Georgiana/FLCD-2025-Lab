@@ -1,0 +1,9 @@
+--- PROGRAM INTERNAL FORM ---
+var -> -1
+id -> 0
+= -> -1
+num -> 1
+; -> -1
+var -> -1
+id -> 2
+= -> -1
