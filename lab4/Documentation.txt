@@ -1,0 +1,184 @@
+Lexical Analyzer with Finite Automata and Regular Grammar Conversion
+================================================================
+
+1. Purpose
+-----------
+This project implements a lexical analyzer (lexer) for a simple programming language using Flex.
+It identifies tokens, constructs a Symbol Table (ST) and Program Internal Form (PIF), and also
+builds and prints Finite Automata (FA) and their equivalent Regular Grammars (RG) for identifiers
+and numeric constants.
+
+The lexer validates lexical correctness, saves errors, and outputs PIF and ST both on screen and in text files.
+
+
+2. Language Description
+------------------------
+Supported language elements:
+
+Keywords:
+    input, print, if, else, while, function, return, var
+
+Mathematical functions:
+    sqrt, abs, pow, sin, cos, tan
+
+Operators:
+    ==, <>, <=, >=, <, >, +, -, *, /, %, ^, ^^, %%, @@, =
+
+Separators:
+    ( ), { }, ; , ,
+
+Identifiers:
+    [a-zA-Z][a-zA-Z0-9_]*
+
+Constants (numbers):
+    [0-9]+("." [0-9]+)?
+
+
+3. Lexer Structure
+-------------------
+The lexer consists of three main parts:
+
+(1) C Declarations Section (%{ ... %}):
+    Defines helper structures and functions for Symbol Table, PIF, FA, and RG.
+
+(2) Regular Definitions:
+    DIGIT       [0-9]
+    LETTER      [a-zA-Z]
+    IDENTIFIER  {LETTER}({LETTER}|{DIGIT}|"_")*
+    NUMBER      {DIGIT}+("."{DIGIT}+)? 
+
+(3) Rules Section (%% ... %%):
+    Contains token recognition rules and corresponding actions, for example:
+        "var"           { addToPIF("var", -1); }
+        {IDENTIFIER}    { int idx = addToST(yytext); addToPIF("id", idx); }
+        {NUMBER}        { int idx = addToST(yytext); addToPIF("num", idx); }
+
+(4) Main Function:
+    Opens a source file, runs the lexer, prints and saves results, and generates FA and RG.
+
+
+4. Symbol Table (ST)
+---------------------
+Implementation:
+    The Symbol Table is implemented as a Binary Search Tree (BST).
+    Each node holds a token and a unique integer index.
+
+Example Output:
+    --- SYMBOL TABLE (in-order) ---
+    10 -> 1
+    123 -> 7
+    20 -> 3
+    a -> 5
+    b -> 6
+    sum -> 4
+    x -> 0
+    y -> 2
+
+
+5. Program Internal Form (PIF)
+-------------------------------
+Represents the sequence of tokens as they appear in the program.
+
+Each entry includes the token and the index in the ST (for identifiers and constants).
+
+Example Output:
+    --- PROGRAM INTERNAL FORM ---
+    var -> -1
+    id -> 0
+    = -> -1
+    num -> 1
+    ; -> -1
+
+
+6. Finite Automata (FA)
+------------------------
+The program builds FA models for identifiers and numbers.
+
+Identifier FA:
+    States: q0 (start), q1 (final)
+    Transitions:
+      q0 --letter--> q1
+      q1 --letter--> q1
+      q1 --digit--> q1
+      q1 --_--> q1
+
+Number FA:
+    States: q0 (start), q1 (final), q2, q3 (final)
+    Transitions:
+      q0 --digit--> q1
+      q1 --digit--> q1
+      q1 --.--> q2
+      q2 --digit--> q3
+      q3 --digit--> q3
+
+
+7. Regular Grammar (RG)
+------------------------
+The FA is automatically converted to its equivalent Regular Grammar form.
+
+Identifier RG:
+    q0 -> letter q1
+    q1 -> letter q1 | digit q1 | _ q1 | eps
+
+Number RG:
+    q0 -> digit q1
+    q1 -> digit q1 | . q2 | eps
+    q2 -> digit q3
+    q3 -> digit q3 | eps
+
+
+8. Lexical Error Detection
+---------------------------
+If an invalid token is found, the lexer:
+    - Stops execution
+    - Writes the invalid token and line number to lexical_errors.txt
+    - Saves ST and PIF to files
+
+Example:
+    Lexical error at line 3: Invalid token '12abc'
+
+
+9. Output Files
+----------------
+    ST_hash.txt          - Symbol Table (in-order)
+    PIF.txt              - Program Internal Form
+    lexical_errors.txt   - Lexical errors (if any)
+    lexer_with_fa_rg.exe - Executable lexer
+
+
+10. Compilation and Execution
+------------------------------
+To compile:
+    flex lexer_with_fa_rg.l
+    gcc lex.yy.c -o lexer_with_fa_rg -lfl
+
+To run:
+    ./lexer_with_fa_rg program.txt
+
+
+11. Example Execution
+----------------------
+Input file (program.txt):
+    var x = 10;
+    var y = 20;
+    function sum(a, b) {
+        return a + b;
+    }
+    if (x < y) {
+        print x;
+    } else {
+        print y;
+    }
+    input 123;
+
+Output:
+    - Symbol Table printed and saved
+    - PIF printed and saved
+    - FA and RG for identifiers and numbers displayed
+
+
+12. Conclusion
+---------------
+The lexer correctly identifies tokens, builds symbol and program representations,
+detects lexical errors, and constructs FA and RG models. It represents a complete
+lexical analysis stage for a simple compiler.
